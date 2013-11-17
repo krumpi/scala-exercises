@@ -127,4 +127,81 @@ class CircuitSuite extends CircuitSimulator with FunSuite {
     assert(out1.getSignal === true, "demux1 6")
   }
 
+  test("demux2 example") {
+    val in = new Wire
+    val c0 = new Wire
+    val c1 = new Wire
+    val out0 = new Wire
+    val out1 = new Wire
+    val out2 = new Wire
+    val out3 = new Wire
+    demux(in, List(c0, c1), List(out3, out2, out1, out0))
+
+    c0.setSignal(false)
+    c1.setSignal(false)
+    in.setSignal(false)
+    run
+    assert(out0.getSignal === false, "demux2 1")
+    assert(out1.getSignal === false, "demux2 2")
+    assert(out2.getSignal === false, "demux2 3")
+    assert(out3.getSignal === false, "demux2 4")
+
+    c0.setSignal(true)
+    run
+    assert(out0.getSignal === false, "demux2 1")
+    assert(out1.getSignal === false, "demux2 2")
+    assert(out2.getSignal === false, "demux2 3")
+    assert(out3.getSignal === false, "demux2 4")
+
+    c0.setSignal(false)
+    c1.setSignal(true)
+    run
+    assert(out0.getSignal === false, "demux2 1")
+    assert(out1.getSignal === false, "demux2 2")
+    assert(out2.getSignal === false, "demux2 3")
+    assert(out3.getSignal === false, "demux2 4")
+
+    c0.setSignal(true)
+    c1.setSignal(true)
+    run
+    assert(out0.getSignal === false, "demux2 1")
+    assert(out1.getSignal === false, "demux2 2")
+    assert(out2.getSignal === false, "demux2 3")
+    assert(out3.getSignal === false, "demux2 4")
+
+    in.setSignal(true)
+    c0.setSignal(false)
+    c1.setSignal(false)
+    run
+    assert(out0.getSignal === true, "demux2 1")
+    assert(out1.getSignal === false, "demux2 2")
+    assert(out2.getSignal === false, "demux2 3")
+    assert(out3.getSignal === false, "demux2 4")
+
+    c1.setSignal(true)
+    run
+    assert(out0.getSignal === false, "demux2 1")
+    assert(out1.getSignal === true, "demux2 2")
+    assert(out2.getSignal === false, "demux2 3")
+    assert(out3.getSignal === false, "demux2 4")
+
+    c1.setSignal(false)
+    c0.setSignal(true)
+    run
+    assert(out0.getSignal === false, "demux2 1")
+    assert(out1.getSignal === false, "demux2 2")
+    assert(out2.getSignal === true, "demux2 3")
+    assert(out3.getSignal === false, "demux2 4")
+
+    c1.setSignal(true)
+    c0.setSignal(true)
+    run
+    assert(out0.getSignal === false, "demux2 1")
+    assert(out1.getSignal === false, "demux2 2")
+    assert(out2.getSignal === false, "demux2 3")
+    assert(out3.getSignal === true, "demux2 4")
+
+    println("here")
+  }
+
 }

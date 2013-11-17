@@ -83,24 +83,21 @@ abstract class CircuitSimulator extends Simulator {
   }
 
   def demux(in: Wire, c: List[Wire], out: List[Wire]) {
-    println(out.length)
-    println(c.length)
-//®    require(out.length * 2 == c.length)
     def demux12(in: Wire, c: Wire, out0: Wire, out1: Wire) {
-      val control1 = new Wire
-      inverter(c, control1)
-      orGate(in, control1, out0)
-      orGate(in, c, out1)
+      val invC = new Wire
+      inverter(c, invC)
+      andGate(in, c, out0)
+      andGate(in, invC, out1)
     }
-    println(out.sliding(2).toList)
-    /*for {
-      control <- c
-      output  <- out.sliding(2)
-    } yield demux12(in, control, output.head, output.last)*/
-    c.headOption match {
-      case Some(w) =>
-      case None    => out.headOption.foreach { o:Wire =>
-        println("NOO " + o)
+    c match {
+      case w :: Nil  => demux12(in, w, out.head, out.last)
+      case w :: tail =>
+        val out0 = new Wire
+        val out1 = new Wire
+        demux12(in, w, out0, out1)
+        demux(out0, tail, out.take(out.length / 2))
+        demux(out1, tail, out.takeRight(out.length / 2))
+      case Nil       => out.headOption.foreach { o:Wire =>
         noop(in, o)
       }
     }
