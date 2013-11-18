@@ -7,7 +7,7 @@ class Simulator {
 
   case class WorkItem(time: Int, action: Action)
 
-  protected[simulations] var agenda: Agenda = List()
+  protected[simulations] var agenda: Agenda = List[WorkItem]()
   protected var currentTime = 0
 
   protected def afterDelay(delay: Int)(action: => Unit) {

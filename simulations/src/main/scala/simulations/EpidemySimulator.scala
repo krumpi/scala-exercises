@@ -16,7 +16,7 @@ class EpidemySimulator extends Simulator {
 
   import SimConfig._
 
-  val persons: List[Person] = List() // to complete: construct list of persons
+  val persons: List[Person] = (for {id <- 0 to population} yield new Person(id)).toList
 
   class Person (val id: Int) {
     var infected = false
@@ -28,8 +28,6 @@ class EpidemySimulator extends Simulator {
     var row: Int = randomBelow(roomRows)
     var col: Int = randomBelow(roomColumns)
 
-    //
-    // to complete with simulation logic
-    //
+    afterDelay(5) {println("Abc")}
   }
 }
