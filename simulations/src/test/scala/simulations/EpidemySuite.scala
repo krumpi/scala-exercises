@@ -45,8 +45,9 @@ class EpidemySuite extends FunSuite {
   }
 
   test("life cycle"){
-    var personDied = true;
+    val personDied = false
     while(!personDied){
+      println("LFE")
       val es = new EpidemySimulator
 
       val incubationTime = 6
@@ -101,5 +102,12 @@ class EpidemySuite extends FunSuite {
       infectedTimes = infectedTimes + (if(healthyPerson.infected) 1 else 0)
 	  }
 	  assert(infectedTimes > 0, "A person should get infected according to the transmissibility rate when he moves into a room with an infectious person")
+  }
+
+  test("random below") {
+    val es = new EpidemySimulator
+    for (i <- 0 until 100000) {
+      assert(es.randomBelow(5) >= 0 && es.randomBelow(5) < 5)
+    }
   }
 }
