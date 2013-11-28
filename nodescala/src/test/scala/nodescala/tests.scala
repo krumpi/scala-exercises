@@ -11,6 +11,7 @@ import org.scalatest._
 import NodeScala._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import scala.actors.threadpool.TimeUnit
 
 @RunWith(classOf[JUnitRunner])
 class NodeScalaSuite extends FunSuite {
@@ -59,6 +60,43 @@ class NodeScalaSuite extends FunSuite {
     val delay = Future.delay(1 second)
     Await.result(delay, 1 second)
     assert(System.currentTimeMillis() - time > 1000)
+  }
+
+  test("A Future now should return the answer immeditaly or fail") {
+    for (i <- 0 to 10000) {
+      try {
+        val wait = scala.math.random
+        val now = Future { TimeUnit.MILLISECONDS.sleep(wait.toLong); 1 }
+        assert(now.now == 1)
+      } catch {
+        case t: NoSuchElementException => // ok!
+      }
+    }
+  }
+
+  test("Future.now should throw a NoSuchElementException when not completed") {
+    try {
+      Future.never.now
+      assert(false)
+    } catch {
+      case t: NoSuchElementException => // ok!
+      case t: Exception => assert(false)
+    }
+  }
+
+  test("A Future continue with") {
+    val f = Future {1}
+    def cont(f: Future[Int]):Int = 2
+    assert(Await.result(f.continueWith(cont), 1 second) == 2)
+
+    val f2 = Future.failed[Int](new RuntimeException)
+    assert(Await.result(f2.continueWith(cont), 1 second) == 2)
+  }
+
+  test("A Future continue") {
+    val f = Future {1}
+    def cont(f: Try[Int]):Int = 2
+    assert(Await.result(f.continue(cont), 1 second) == 2)
   }
 
   test("CancellationTokenSource should allow stopping the computation") {
@@ -158,7 +196,7 @@ class NodeScalaSuite extends FunSuite {
   test("Server should serve requests") {
     val dummy = new DummyServer(8191)
     val dummySubscription = dummy.start("/testDir") {
-      request => for (kv <- request.iterator) yield (kv + "\n").toString
+      request => for (kv <- request.iterator) yield (kv + "\n")
     }
 
     // wait until server is really installed
